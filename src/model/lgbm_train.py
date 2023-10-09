@@ -82,7 +82,7 @@ class LGBMModel:
                 'cat_smooth' : trial.suggest_int('min_data_per_groups', 1, 100)
             }
 
-            model = LGBMClassifier(**param)  
+            model = LGBMClassifier(**param, verbose=0)  
             model.fit(
                 train_x, train_y,
                 eval_set=[(test_x,test_y)],
@@ -117,7 +117,7 @@ class LGBMModel:
         y_pred_ls, y_prob_ls = [], []
 
         skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
-        model = LGBMClassifier(**best_params)
+        model = LGBMClassifier(**best_params, verbose=0)
         
         for num, (train_idx, valid_idx) in enumerate(skf.split(X_train, y_train)):
             train_x, val_x = X_train.loc[train_idx], X_train.loc[valid_idx]
