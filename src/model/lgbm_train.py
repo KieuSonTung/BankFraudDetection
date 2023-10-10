@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split, StratifiedKFold
 from lightgbm import LGBMClassifier
 import optuna
 from sklearn.metrics import roc_curve
-from preprocess import utils
+from src.preprocess import utils
 
 
 class LGBMModel:
