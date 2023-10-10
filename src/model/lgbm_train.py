@@ -16,15 +16,15 @@ class LGBMModel:
         ohe_cols = pd.DataFrame(ohe.fit_transform(X[object_cols]))
         ohe_cols.index = X.index
 
-        num_X = X.drop(object_cols, axis=1)
-        
-        X = pd.concat([num_X, ohe_cols], axis=1)
-
+        X.drop(object_cols, axis=1, inplace=True)
+        X[ohe_cols.columns] = ohe_cols
         X.columns = X.columns.astype(str)
 
         return X
     
     def split_train_test_set(self, df):
+        df.drop('month', axis=1, inplace=True)
+
         # Split data into features and target
         X = df.drop(['fraud_bool'], axis=1)
         y = df['fraud_bool']
@@ -34,9 +34,6 @@ class LGBMModel:
         X_test = X[X['month'] >= 6]
         y_train = y[X['month'] < 6]
         y_test = y[X['month'] >= 6]
-
-        X_train.drop('month', axis=1, inplace=True)
-        X_test.drop('month', axis=1, inplace=True)
 
         return X_train, y_train, X_test, y_test
     
@@ -114,7 +111,6 @@ class LGBMModel:
         return tpr
     
     def retrain_kfold(self, X_train, y_train, X_test, y_test, best_params, n_splits=5):        
-        preds = 0
         model_fi = 0
         total_mean_tpr = 0
         y_pred_ls, y_prob_ls = [], []
