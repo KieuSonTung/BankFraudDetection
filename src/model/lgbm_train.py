@@ -49,8 +49,8 @@ class LGBMModel:
         s = (X_train.dtypes == 'object') 
         object_cols = list(s[s].index)
 
-        X_train = self.process_cat_feats(X_train)
-        X_test = self.process_cat_feats(X_test)
+        X_train = self.process_cat_feats(X_train, object_cols)
+        X_test = self.process_cat_feats(X_test, object_cols)
 
         X_train = X_train.reset_index() \
                 .drop(columns='index')
@@ -70,6 +70,8 @@ class LGBMModel:
 
             param = {
                 'random_state': 48,
+                'early_stopping_round': 200,
+                'verbose': -1,
                 'n_estimators': trial.suggest_int('n_estimators', 10000, 20000),
                 'reg_alpha': trial.suggest_float('reg_alpha', 1e-3, 10.0),
                 'reg_lambda': trial.suggest_float('reg_lambda', 1e-3, 10.0),
@@ -82,12 +84,10 @@ class LGBMModel:
                 'cat_smooth' : trial.suggest_int('min_data_per_groups', 1, 100)
             }
 
-            model = LGBMClassifier(**param, verbose=0)  
+            model = LGBMClassifier(**param)  
             model.fit(
                 train_x, train_y,
-                eval_set=[(test_x,test_y)],
-                early_stopping_rounds=100,
-                verbose=False
+                eval_set=[(test_x,test_y)]
             )
             
             preds = model.predict_proba(test_x)[:, 1]
@@ -117,7 +117,7 @@ class LGBMModel:
         y_pred_ls, y_prob_ls = [], []
 
         skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
-        model = LGBMClassifier(**best_params, verbose=0)
+        model = LGBMClassifier(**best_params, verbose=-1)
         
         for num, (train_idx, valid_idx) in enumerate(skf.split(X_train, y_train)):
             train_x, val_x = X_train.loc[train_idx], X_train.loc[valid_idx]
@@ -126,8 +126,7 @@ class LGBMModel:
             model.fit(
                 train_x, train_y,
                 eval_set=[(train_x, train_y), (val_x, val_y)],
-                eval_metric='auc', 
-                early_stopping_rounds=100
+                eval_metric='auc'
             )
             
             y_pred = model.predict(X_test)
