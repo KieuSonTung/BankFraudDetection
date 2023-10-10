@@ -5,7 +5,7 @@ from xgboost import XGBClassifier
 import optuna
 from sklearn.metrics import roc_curve
 import warnings
-#from preprocess import utils
+from src.preprocess import utils
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 warnings.filterwarnings("ignore")
@@ -73,6 +73,7 @@ class XGBoostModel:
 
             param = {
                 'random_state': 48,
+                'n_jobs': -1,
                 'n_estimators': trial.suggest_int('n_estimators', 100, 1500),
                 'reg_alpha': trial.suggest_float('reg_alpha', 1e-3, 10.0),
                 'reg_lambda': trial.suggest_float('reg_lambda', 1e-3, 10.0),
@@ -118,7 +119,7 @@ class XGBoostModel:
         y_pred_ls, y_prob_ls = [], []
 
         skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
-        model = XGBClassifier(**best_params, tree_method='gpu_hist', verbosity = 0)
+        model = XGBClassifier(**best_params, tree_method='gpu_hist', verbosity=0, n_jobs=-1)
         
         for num, (train_idx, valid_idx) in enumerate(skf.split(X_train, y_train)):
             train_x, val_x = X_train.loc[train_idx], X_train.loc[valid_idx]

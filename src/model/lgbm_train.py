@@ -72,6 +72,7 @@ class LGBMModel:
                 'random_state': 48,
                 'early_stopping_round': 200,
                 'verbose': -1,
+                'n_jobs': -1,
                 'n_estimators': trial.suggest_int('n_estimators', 10000, 20000),
                 'reg_alpha': trial.suggest_float('reg_alpha', 1e-3, 10.0),
                 'reg_lambda': trial.suggest_float('reg_lambda', 1e-3, 10.0),
@@ -101,8 +102,10 @@ class LGBMModel:
         study.optimize(lambda trial: objective(trial, X_train, y_train), n_trials=n_trials)
 
         print('Number of finished trials:', len(study.trials))
+
+        best_params = study.best_trial.params
         
-        return study.best_trial.params
+        return best_params
         
     def custom_tpr(self, y_true, y_pred):
         fprs, tprs, thresholds = roc_curve(y_true, y_pred)
@@ -117,7 +120,7 @@ class LGBMModel:
         y_pred_ls, y_prob_ls = [], []
 
         skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
-        model = LGBMClassifier(**best_params, verbose=-1)
+        model = LGBMClassifier(**best_params, verbose=-1, n_jobs=-1)
         
         for num, (train_idx, valid_idx) in enumerate(skf.split(X_train, y_train)):
             train_x, val_x = X_train.loc[train_idx], X_train.loc[valid_idx]
