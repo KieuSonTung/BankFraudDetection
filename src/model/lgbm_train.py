@@ -97,14 +97,10 @@ class LGBMModel:
 
         y_pred_ls, y_prob_ls = self.retrain_kfold(X_train, y_train, X_test, y_test, best_params)
 
-        if voting_method == 'soft':
-            pred = utils.soft_voting(y_prob_ls)
-        elif voting_method == 'hard':
-            pred = utils.hard_voting(y_pred_ls)
-        else:
-            print('TypeError: voting_method must be "soft" or "hard"')
+        prob = utils.soft_voting(y_prob_ls)
+        pred = utils.hard_voting(y_pred_ls)
 
-        return pred
+        return pred, prob
 
         
 
