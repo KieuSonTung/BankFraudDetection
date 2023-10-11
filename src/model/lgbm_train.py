@@ -85,7 +85,7 @@ class LGBMModel:
         return y_pred_ls, y_prob_ls
 
 
-    def fit(self, df, voting_method='soft'):
+    def fit(self, df):
         '''
         df: dataframe, contains both train and test set
         voting_method: voting method (options: soft, hard; default: soft)
