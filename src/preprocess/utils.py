@@ -18,26 +18,26 @@ class PreProcess:
 
         return X
 
-    def split_train_test_set(self, df):
+    def split_train_test_set(self, df, month_pred):
         # Split data into features and target
         X = df.drop(['fraud_bool'], axis=1)
         y = df['fraud_bool']
 
         # Train test split by 'month', month 0-5 are train, 6-7 are test data as proposed in the paper
-        X_train = X[X['month'] < 6]
-        X_test = X[X['month'] >= 6]
-        y_train = y[X['month'] < 6]
-        y_test = y[X['month'] >= 6]
+        X_train = X[X['month'] < month_pred]
+        X_test = X[X['month'] >= month_pred]
+        y_train = y[X['month'] < month_pred]
+        y_test = y[X['month'] >= month_pred]
 
         X_train.drop('month', axis=1, inplace=True)
         X_test.drop('month', axis=1, inplace=True)
 
         return X_train, y_train, X_test, y_test
 
-    def fit(self, df):
+    def fit(self, df, month_pred):
         df = df.drop(['device_fraud_count'], axis=1, errors='ignore')
 
-        X_train, y_train, X_test, y_test = self.split_train_test_set(df)
+        X_train, y_train, X_test, y_test = self.split_train_test_set(df, month_pred)
         
         # list of column-names and whether they contain categorical features
         s = (X_train.dtypes == 'object') 
@@ -90,3 +90,17 @@ def hard_voting(matrix):
 def soft_voting(matrix):
     
     return [sum(col) / len(col) for col in zip(*matrix)]
+
+def insert_overwrite_partition_by_month(spark, df, path, col_partition='month', schema=None):
+    jvm = spark._jvm
+    jsc = spark._jsc
+    fs = jvm.org.apache.hadoop.fs.FileSystem.get(jsc.hadoopConfiguration())
+    cols = [c for c in df.columns if c != col_partition]
+    partition_list = df[col_partition].unique()
+
+    for p in partition_list:
+        df_filter = df[df[col_partition] == p]
+
+        for m in df_filter[col_partition].unique():
+            df_spark = spark.createDataFrame(df_filter[cols], schema=schema)
+            df_spark.write.mode('overwrite').format('avro').save(path + '/' + col_partition + '=' + str(p))
