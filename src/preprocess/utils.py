@@ -19,8 +19,6 @@ class PreProcess:
         return X
 
     def split_train_test_set(self, df):
-        df.drop('month', axis=1, inplace=True)
-
         # Split data into features and target
         X = df.drop(['fraud_bool'], axis=1)
         y = df['fraud_bool']
@@ -30,6 +28,9 @@ class PreProcess:
         X_test = X[X['month'] >= 6]
         y_train = y[X['month'] < 6]
         y_test = y[X['month'] >= 6]
+
+        X_train.drop('month', axis=1, inplace=True)
+        X_test.drop('month', axis=1, inplace=True)
 
         return X_train, y_train, X_test, y_test
 
