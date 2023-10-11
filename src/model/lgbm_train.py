@@ -73,7 +73,7 @@ class LGBMModel:
                 'early_stopping_round': 200,
                 'verbose': -1,
                 'n_jobs': -1,
-                'n_estimators': trial.suggest_int('n_estimators', 10000, 20000),
+                'n_estimators': trial.suggest_int('n_estimators', 5000, 10000),
                 'reg_alpha': trial.suggest_float('reg_alpha', 1e-3, 10.0),
                 'reg_lambda': trial.suggest_float('reg_lambda', 1e-3, 10.0),
                 'colsample_bytree': trial.suggest_categorical('colsample_bytree', [0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1.0]),
@@ -104,6 +104,7 @@ class LGBMModel:
         print('Number of finished trials:', len(study.trials))
 
         best_params = study.best_trial.params
+        print('Best params', best_params)
         
         return best_params
         

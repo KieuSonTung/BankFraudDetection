@@ -84,7 +84,7 @@ class XGBoostModel:
                 'min_child_weight': trial.suggest_int('min_child_samples', 1, 30)
             }
 
-            model = XGBClassifier(**param, tree_method='gpu_hist', verbosity = 0)  
+            model = XGBClassifier(**param, verbosity = 0)  
             model.fit(
                 train_x, train_y,
                 eval_set=[(test_x,test_y)],
@@ -113,13 +113,12 @@ class XGBoostModel:
         return tpr
     
     def retrain_kfold(self, X_train, y_train, X_test, y_test, best_params, n_splits=5):        
-        preds = 0
         model_fi = 0
         total_mean_tpr = 0
         y_pred_ls, y_prob_ls = [], []
 
         skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
-        model = XGBClassifier(**best_params, tree_method='gpu_hist', verbosity=0, n_jobs=-1)
+        model = XGBClassifier(**best_params, verbosity=0, n_jobs=-1)
         
         for num, (train_idx, valid_idx) in enumerate(skf.split(X_train, y_train)):
             train_x, val_x = X_train.loc[train_idx], X_train.loc[valid_idx]
