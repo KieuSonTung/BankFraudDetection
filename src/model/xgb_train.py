@@ -88,14 +88,14 @@ class XGBoostModel:
         return y_pred_ls, y_prob_ls
 
 
-    def fit(self, df):
+    def fit(self, df, month_pred):
         '''
         df: dataframe, contains both train and test set
         voting_method: voting method (options: soft, hard; default: soft)
         '''
         
         p = utils.PreProcess()
-        X_train, y_train, X_test, y_test = p.fit(df)
+        X_train, y_train, X_test, y_test = p.fit(df, month_pred)
 
         best_params = self.optimize(X_train, y_train)
 
