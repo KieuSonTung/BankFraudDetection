@@ -51,7 +51,6 @@ class XGBoostModel:
         return study.best_trial.params
     
     def retrain_kfold(self, X_train, y_train, X_test, y_test, best_params, n_splits=5):        
-        preds = 0
         model_fi = 0
         total_mean_tpr = 0
         y_pred_ls, y_prob_ls = [], []
