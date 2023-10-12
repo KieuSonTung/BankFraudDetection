@@ -6,6 +6,7 @@ import optuna
 from sklearn.metrics import roc_curve
 import warnings
 from src.preprocess import utils
+from src.visualize import plot_feat_imp
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 warnings.filterwarnings("ignore")
