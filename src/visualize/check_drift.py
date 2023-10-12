@@ -10,7 +10,7 @@ def plot_features_dist(train_df, infer_df):
 
     for i, feature in enumerate(numeric_features):
         ax = axes[i // 3][i % 3]
-        sns.kdeplot(data=df[feature], fill=True, ax=ax, label='Train')
+        sns.kdeplot(data=train_df[feature], fill=True, ax=ax, label='Train')
         sns.kdeplot(data=infer_df[feature], fill=True, ax=ax, label='Infer')
         
         ax.set_xlabel(feature)
@@ -30,7 +30,7 @@ def plot_feature_dist_each_class(train_df, infer_df, cls):
 
     for i, feature in enumerate(numeric_features):
         ax = axes[i // 3][i % 3]
-        sns.kdeplot(data=df[df['fraud_bool'] == cls][feature], fill=True, ax=ax, label='Train')
+        sns.kdeplot(data=train_df[train_df['fraud_bool'] == cls][feature], fill=True, ax=ax, label='Train')
         sns.kdeplot(data=infer_df[infer_df['fraud_bool'] == cls][feature], fill=True, ax=ax, label='Infer')
         
         ax.set_xlabel(feature)
