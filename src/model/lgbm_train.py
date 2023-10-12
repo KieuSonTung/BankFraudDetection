@@ -4,11 +4,11 @@ from lightgbm import LGBMClassifier
 import optuna
 from sklearn.metrics import roc_curve
 from src.preprocess import utils
-from src.visualize import plot_feat_imp
+from src.visualize.plot_feat_imp import plot_feature_importance
 
 
 class LGBMModel:
-    def optimize(self, X_train, y_train, n_trials=5):
+    def optimize(self, X_train, y_train, n_trials=1):
         def objective(trial, data, target):
             train_x, test_x, train_y, test_y = train_test_split(data, target, test_size=0.2, random_state=42)
 
@@ -51,7 +51,7 @@ class LGBMModel:
         
         return best_params
     
-    def retrain_kfold(self, X_train, y_train, X_test, y_test, best_params, n_splits=5):        
+    def retrain_kfold(self, X_train, y_train, X_test, y_test, best_params, n_splits=2):        
         model_fi = 0
         total_mean_tpr = 0
         y_pred_ls, y_prob_ls = [], []
@@ -84,7 +84,7 @@ class LGBMModel:
         print(f'Mean TPR on infer set: {total_mean_tpr}')
 
         # plot feature importace
-        plot_feat_imp(X_train, model_fi)
+        plot_feature_importance(X_train, model_fi)
 
         return y_pred_ls, y_prob_ls
 
@@ -99,13 +99,19 @@ class LGBMModel:
         X_train, y_train, X_test, y_test = p.fit(df, month_pred)
 
         best_params = self.optimize(X_train, y_train)
+        # best_params = {'n_estimators': 8902, 'reg_alpha': 4.225210678586751, 'reg_lambda': 0.4564306389521886, 'colsample_bytree': 0.5, 'subsample': 0.7, 'learning_rate': 0.008065204720928393, 'max_depth': 76, 'num_leaves': 824, 'min_child_samples': 101, 'min_data_per_groups': 63}
 
         y_pred_ls, y_prob_ls = self.retrain_kfold(X_train, y_train, X_test, y_test, best_params)
 
         prob = utils.soft_voting(y_prob_ls)
         pred = utils.hard_voting(y_pred_ls)
 
-        return pred, prob
+        result = X_test.copy()
+        result['y_true'] = y_test
+        result['y_pred'] = pred
+        result['y_prob'] = prob
+
+        return result
 
         
 

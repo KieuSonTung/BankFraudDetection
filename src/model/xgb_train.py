@@ -6,13 +6,13 @@ import optuna
 from sklearn.metrics import roc_curve
 import warnings
 from src.preprocess import utils
-from src.visualize import plot_feat_imp
+from src.visualize.plot_feat_imp import plot_feature_importance
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 warnings.filterwarnings("ignore")
 
 class XGBoostModel:
-    def optimize(self, X_train, y_train, n_trials=5):
+    def optimize(self, X_train, y_train, n_trials=1):
         def objective(trial, data, target):
             train_x, test_x, train_y, test_y = train_test_split(data, target, test_size=0.2, random_state=42)
 
@@ -52,7 +52,7 @@ class XGBoostModel:
         
         return study.best_trial.params
     
-    def retrain_kfold(self, X_train, y_train, X_test, y_test, best_params, n_splits=5):        
+    def retrain_kfold(self, X_train, y_train, X_test, y_test, best_params, n_splits=2):        
         model_fi = 0
         total_mean_tpr = 0
         y_pred_ls, y_prob_ls = [], []
@@ -87,7 +87,7 @@ class XGBoostModel:
         print(f'Mean TPR on infer set: {total_mean_tpr}')
 
         # plot feature importace
-        plot_feat_imp(X_train, model_fi)
+        plot_feature_importance(X_train, model_fi)
 
         return y_pred_ls, y_prob_ls
 
@@ -108,6 +108,11 @@ class XGBoostModel:
         prob = utils.soft_voting(y_prob_ls)
         pred = utils.hard_voting(y_pred_ls)
 
-        return pred, prob
+        result = X_test.copy()
+        result['y_true'] = y_test
+        result['y_pred'] = pred
+        result['y_prob'] = prob
+
+        return result
 
         
