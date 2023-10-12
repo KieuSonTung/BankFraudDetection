@@ -20,7 +20,7 @@ class LGBMModel:
                 'n_estimators': trial.suggest_int('n_estimators', 5000, 10000),
                 'reg_alpha': trial.suggest_float('reg_alpha', 1e-3, 10.0),
                 'reg_lambda': trial.suggest_float('reg_lambda', 1e-3, 10.0),
-                'colsample_bytree': trial.suggest_categorical('colsample_bytree', [0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1.0]),
+                'colsample_bytree': trial.suggest_categorical('colsample_bytree', [0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]),
                 'subsample': trial.suggest_categorical('subsample', [0.4,0.5,0.6,0.7,0.8,1.0]),
                 'learning_rate': trial.suggest_float('learning_rate', 0.006, 0.02),
                 'max_depth': trial.suggest_int('max_depth', 10, 100),
