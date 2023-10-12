@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split, StratifiedKFold
 from lightgbm import LGBMClassifier
 import optuna
 from sklearn.metrics import roc_curve
-from src.preprocess import utils
+from src.preprocess import utils, evaluate
 from src.visualize.plot_feat_imp import plot_feature_importance
 
 
@@ -37,7 +37,7 @@ class LGBMModel:
             
             preds = model.predict_proba(test_x)[:, 1]
             
-            tpr = utils.custom_tpr(test_y, preds)
+            tpr = evaluate.custom_tpr(test_y, preds)
             
             return tpr
         
@@ -74,7 +74,7 @@ class LGBMModel:
             y_pred_ls.append(y_pred)
             y_prob_ls.append(y_prob)
             
-            fold_tpr = utils.custom_tpr(y_test, y_prob)
+            fold_tpr = evaluate.custom_tpr(y_test, y_prob)
             
             model_fi += model.feature_importances_ / n_splits
             print(f'Fold {num} recall: {fold_tpr}')
@@ -105,6 +105,9 @@ class LGBMModel:
 
         prob = utils.soft_voting(y_prob_ls)
         pred = utils.hard_voting(y_pred_ls)
+
+        # print classification report
+        evaluate.test_classifier(y_test, pred, prob)
 
         result = X_test.copy()
         result['y_true'] = y_test
