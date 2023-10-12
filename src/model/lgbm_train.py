@@ -110,6 +110,7 @@ class LGBMModel:
         result['y_true'] = y_test
         result['y_pred'] = pred
         result['y_prob'] = prob
+        result['month'] = month_pred
 
         return result
 

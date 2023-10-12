@@ -1,5 +1,4 @@
 from collections import Counter
-from sklearn.metrics import roc_curve
 from sklearn.preprocessing import OneHotEncoder
 import pandas as pd
 
@@ -59,13 +58,6 @@ class PreProcess:
         return X_train, y_train, X_test, y_test
 
 
-# metrics
-def custom_tpr(y_true, y_pred):
-    fprs, tprs, thresholds = roc_curve(y_true, y_pred)
-    tpr = tprs[fprs < 0.05][-1]
-    
-    return tpr
-
 # Ensemble
 def hard_voting(matrix):
     # Transpose the matrix to group values by position
@@ -91,6 +83,7 @@ def soft_voting(matrix):
     
     return [sum(col) / len(col) for col in zip(*matrix)]
 
+# Insert into data warehouse
 def insert_overwrite_partition_by_month(spark, df, path, col_partition='month', schema=None):
     jvm = spark._jvm
     jsc = spark._jsc
