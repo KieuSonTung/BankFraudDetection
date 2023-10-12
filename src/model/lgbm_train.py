@@ -4,6 +4,7 @@ from lightgbm import LGBMClassifier
 import optuna
 from sklearn.metrics import roc_curve
 from src.preprocess import utils
+from src.visualize import plot_feat_imp
 
 
 class LGBMModel:
@@ -81,6 +82,9 @@ class LGBMModel:
             total_mean_tpr += fold_tpr / n_splits
 
         print(f'Mean TPR on infer set: {total_mean_tpr}')
+
+        # plot feature importace
+        plot_feat_imp(X_train, model_fi)
 
         return y_pred_ls, y_prob_ls
 

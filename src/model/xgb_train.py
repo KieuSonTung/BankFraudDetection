@@ -85,6 +85,9 @@ class XGBoostModel:
 
         print(f'Mean TPR on infer set: {total_mean_tpr}')
 
+        # plot feature importace
+        plot_feat_imp(X_train, model_fi)
+
         return y_pred_ls, y_prob_ls
 
 
