@@ -76,7 +76,7 @@ class XGBoostModel:
             y_pred_ls.append(y_pred)
             y_prob_ls.append(y_prob)
             
-            fold_tpr = self.custom_tpr(y_test, y_prob)
+            fold_tpr = utils.custom_tpr(y_test, y_prob)
             
             model_fi += model.feature_importances_ / n_splits
             print(f'Fold {num} recall: {fold_tpr}')

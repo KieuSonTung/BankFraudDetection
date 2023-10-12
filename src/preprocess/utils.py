@@ -25,9 +25,9 @@ class PreProcess:
 
         # Train test split by 'month', month 0-5 are train, 6-7 are test data as proposed in the paper
         X_train = X[X['month'] < month_pred]
-        X_test = X[X['month'] >= month_pred]
+        X_test = X[X['month'] == month_pred]
         y_train = y[X['month'] < month_pred]
-        y_test = y[X['month'] >= month_pred]
+        y_test = y[X['month'] == month_pred]
 
         X_train.drop('month', axis=1, inplace=True)
         X_test.drop('month', axis=1, inplace=True)
