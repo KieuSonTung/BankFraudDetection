@@ -21,8 +21,8 @@ class BaseModel(ABC):
             model = self.get_classifier(param)  
             model.fit(train_x, train_y, eval_set=[(test_x, test_y)], early_stopping_rounds=100, verbose=False)
             preds = model.predict_proba(test_x)[:, 1]
-            fprs, tprs, thresholds = roc_curve(test_y, preds)
-            tpr = tprs[fprs < 0.05][-1]
+            
+            tpr = utils.custom_tpr(test_y, preds)
             return tpr
 
         study = optuna.create_study(direction='maximize')
@@ -66,24 +66,20 @@ class BaseModel(ABC):
         return y_pred_ls, y_prob_ls
 
 
-    def fit(self, df, voting_method='soft'):
+    def fit(self, df, month_pred):
         '''
         df: dataframe, contains both train and test set
         voting_method: voting method (options: soft, hard; default: soft)
         '''
         
         p = utils.PreProcess()
-        X_train, y_train, X_test, y_test = p.fit(df)
+        X_train, y_train, X_test, y_test = p.fit(df, month_pred)
 
         best_params = self.optimize(X_train, y_train)
 
         y_pred_ls, y_prob_ls = self.retrain_kfold(X_train, y_train, X_test, y_test, best_params)
 
-        if voting_method == 'soft':
-            pred = utils.soft_voting(y_prob_ls)
-        elif voting_method == 'hard':
-            pred = utils.hard_voting(y_pred_ls)
-        else:
-            print('TypeError: voting_method must be "soft" or "hard"')
+        prob = utils.soft_voting(y_prob_ls)
+        pred = utils.hard_voting(y_pred_ls)
 
-        return pred
+        return pred, prob
