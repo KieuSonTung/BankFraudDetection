@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
 import pandas as pd
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
+
 
 def plot_feature_importance(X, feature_importance):
     feature_imp = pd.DataFrame(sorted(zip(feature_importance, X.columns)), columns=['Value', 'Feature'])
