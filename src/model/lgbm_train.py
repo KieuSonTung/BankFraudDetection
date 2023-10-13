@@ -109,7 +109,7 @@ class LGBMModel:
         # print classification report
         evaluate.test_classifier(y_test, pred, prob)
 
-        result = X_test.copy()
+        result = pd.DataFrame(X_test['id'])
         result['y_true'] = y_test
         result['y_pred'] = pred
         result['y_prob'] = prob
