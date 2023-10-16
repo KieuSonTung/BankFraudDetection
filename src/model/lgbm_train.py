@@ -98,8 +98,8 @@ class LGBMModel:
         p = utils.PreProcess()
         X_train, y_train, X_test, y_test = p.fit(df, month_pred)
 
-        best_params = self.optimize(X_train, y_train)
-        # best_params = {'n_estimators': 8902, 'reg_alpha': 4.225210678586751, 'reg_lambda': 0.4564306389521886, 'colsample_bytree': 0.5, 'subsample': 0.7, 'learning_rate': 0.008065204720928393, 'max_depth': 76, 'num_leaves': 824, 'min_child_samples': 101, 'min_data_per_groups': 63}
+        # best_params = self.optimize(X_train, y_train)
+        best_params = {'n_estimators': 8902, 'reg_alpha': 4.225210678586751, 'reg_lambda': 0.4564306389521886, 'colsample_bytree': 0.5, 'subsample': 0.7, 'learning_rate': 0.008065204720928393, 'max_depth': 76, 'num_leaves': 824, 'min_child_samples': 101, 'min_data_per_groups': 63}
 
         y_pred_ls, y_prob_ls = self.retrain_kfold(X_train, y_train, X_test, y_test, best_params)
 
