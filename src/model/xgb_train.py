@@ -100,7 +100,8 @@ class XGBoostModel:
         p = utils.PreProcess()
         X_train, y_train, X_test, y_test = p.fit(df, month_pred)
 
-        best_params = self.optimize(X_train, y_train)
+        # best_params = self.optimize(X_train, y_train)
+        best_params = {}
 
         y_pred_ls, y_prob_ls = self.retrain_kfold(X_train, y_train, X_test, y_test, best_params)
 
