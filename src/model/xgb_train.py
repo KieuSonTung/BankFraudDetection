@@ -101,7 +101,7 @@ class XGBoostModel:
         X_train, y_train, X_test, y_test = p.fit(df, month_pred)
 
         # best_params = self.optimize(X_train, y_train)
-        best_params = {}
+        best_params = {'n_estimators': 500, 'reg_alpha': 9.70147205477181, 'reg_lambda': 5.666750688719153, 'colsample_bytree': 1.0, 'subsample': 0.4, 'learning_rate': 0.023881381318033447, 'max_depth': 16, 'min_child_samples': 10}
 
         y_pred_ls, y_prob_ls = self.retrain_kfold(X_train, y_train, X_test, y_test, best_params)
 
