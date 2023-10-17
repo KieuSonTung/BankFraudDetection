@@ -84,16 +84,17 @@ def soft_voting(matrix):
     return [sum(col) / len(col) for col in zip(*matrix)]
 
 # Insert into data warehouse
-def insert_overwrite_partition_by_month(spark, df, path, col_partition='month', schema=None):
+def insert_overwrite_partition_by_date_model(spark, df, path, col_partition_date='month', col_partition_model='model', schema=None):
     jvm = spark._jvm
     jsc = spark._jsc
     fs = jvm.org.apache.hadoop.fs.FileSystem.get(jsc.hadoopConfiguration())
-    cols = [c for c in df.columns if c != col_partition]
-    partition_list = df[col_partition].unique()
+    cols = [c for c in df.columns if c != col_partition_date and c != col_partition_model]
+    partition_list = df[col_partition_date].unique()
 
     for p in partition_list:
-        df_filter = df[df[col_partition] == p]
+        df_filter = df[df[col_partition_date] == p]
 
-        for m in df_filter[col_partition].unique():
-            df_spark = spark.createDataFrame(df_filter[cols], schema=schema)
-            df_spark.write.mode('overwrite').format('avro').save(path + '/' + col_partition + '=' + str(p))
+        for m in df_filter[col_partition_model].unique():
+            df_filter_2 = df_filter[df_filter[col_partition_model] == m]
+            df_spark = spark.createDataFrame(df_filter_2[cols], schema=schema)
+            df_spark.write.mode('overwrite').format('parquet').save(path + '/' + col_partition_date + '=' + str(p) + '/' + col_partition_model + '=' + m)
