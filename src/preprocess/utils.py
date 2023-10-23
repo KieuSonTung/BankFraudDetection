@@ -4,16 +4,12 @@ import pandas as pd
 
 # processing
 class PreProcess:
-    def process_cat_feats(self, X, object_cols):
-        ohe = OneHotEncoder(sparse=False, handle_unknown='ignore')
+    def process_cat_feats(self, X):
+        # process categorical features
+        s = (X.dtypes == 'object') 
+        object_cols = list(s[s].index)
 
-        # Get one-hot-encoded columns
-        ohe_cols = pd.DataFrame(ohe.fit_transform(X[object_cols]))
-        ohe_cols.index = X.index
-
-        X.drop(object_cols, axis=1, inplace=True)
-        X[ohe_cols.columns] = ohe_cols
-        X.columns = X.columns.astype(str)
+        X = pd.get_dummies(X, columns=object_cols, dtype=float)
 
         return X
 
@@ -36,15 +32,11 @@ class PreProcess:
     def fit(self, df, month_pred):
         df = df.drop(['device_fraud_count'], axis=1, errors='ignore')
 
+        df = self.process_cat_feats(df)
+
         X_train, y_train, X_test, y_test = self.split_train_test_set(df, month_pred)
         
         # list of column-names and whether they contain categorical features
-        s = (X_train.dtypes == 'object') 
-        object_cols = list(s[s].index)
-
-        X_train = self.process_cat_feats(X_train, object_cols)
-        X_test = self.process_cat_feats(X_test, object_cols)
-
         X_train = X_train.reset_index() \
                 .drop(columns='index')
         X_test = X_test.reset_index() \
