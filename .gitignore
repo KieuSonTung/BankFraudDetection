@@ -7,3 +7,7 @@ main.ipynb
 
 docs/~$Slide_final_vi.tmp
 vts_demobank_dsteam.pem
+test.ipynb
+src/__pycache__
+src/model/__pycache__
+src/preprocess/__pycache__
